@@ -23,6 +23,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/family_healthcare';
 
+// Log startup info
+console.log('[Server] Starting up...');
+console.log('[Server] NODE_ENV:', process.env.NODE_ENV);
+console.log('[Server] PORT:', PORT);
+console.log('[Server] MONGODB_URI:', MONGODB_URI ? '***SET***' : '***NOT SET***');
+
 // Frontend dist path - handles both local dev and Docker production
 const frontendDistPath = process.env.NODE_ENV === 'production'
   ? path.resolve(__dirname, '../../frontend/dist')

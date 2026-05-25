@@ -16,8 +16,11 @@ RUN cd ./frontend && npm ci
 COPY Family_Health_Care_WebApp/Backend/server ./backend
 COPY Family_Health_Care_WebApp/Frontend/client ./frontend
 
-# Build frontend
-RUN cd ./frontend && npm run build
+# Build frontend - with error checking
+RUN cd ./frontend && npm run build && \
+    if [ ! -d "dist" ]; then echo "ERROR: Frontend build failed - dist folder not created"; exit 1; fi && \
+    echo "Frontend build successful" && \
+    ls -la dist/ | head -10
 
 # Expose port
 EXPOSE 5000
