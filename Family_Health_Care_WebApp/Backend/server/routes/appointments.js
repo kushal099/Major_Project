@@ -308,6 +308,47 @@ router.get('/doctor/debug', async (req, res) => {
   }
 });
 
+// DELETE /api/appointments/:id - cancel appointment (patient/admin-only)
+router.delete('/:id', async (req, res) => {
+  try {
+    const requester = req.user;
+    if (!requester) return res.status(401).json({ message: 'Unauthorized' });
+
+    const apptId = req.params.id;
+    const appt = await Appointment.findById(apptId);
+    if (!appt) return res.status(404).json({ message: 'Appointment not found' });
+
+    // Check if requester is the patient or a family admin who owns the family member
+    const isPatient = String(appt.patientId) === String(requester.id);
+    const isFamilyAdmin = requester.role === 'family_admin';
+    
+    if (!isPatient && !isFamilyAdmin) {
+      return res.status(403).json({ message: 'Forbidden: only patient or family admin can cancel' });
+    }
+
+    // If family admin, verify they own the family member
+    if (isFamilyAdmin) {
+      const member = await FamilyMember.findById(appt.patientId).lean();
+      if (!member || String(member.adminId) !== String(requester.id)) {
+        return res.status(403).json({ message: 'Forbidden: not owner of this family member' });
+      }
+    }
+
+    // Cannot cancel if appointment is already completed or rejected
+    if (['completed', 'rejected'].includes(appt.status)) {
+      return res.status(400).json({ message: `Cannot cancel a ${appt.status} appointment` });
+    }
+
+    appt.status = 'cancelled';
+    await appt.save();
+
+    return res.json({ message: 'Appointment cancelled successfully', appointment: appt });
+  } catch (err) {
+    console.error('[Appointments DELETE] Error:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // PATCH /api/appointments/:id/status - update appointment status (doctor-only, must own appointment)
 router.patch('/:id/status', async (req, res) => {
   try {
