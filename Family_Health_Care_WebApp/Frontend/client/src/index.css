@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* App base tweaks */
+html, body, #root { height: 100%; }
+body { margin: 0; }
+
+:root {
+	--c-primary: #122056;
+	--c-accent: #5B65DC;
+	--c-accent-light: #EEEFFD;
+	--c-bg-light: #FAFAFD;
+	--c-surface: #FFFFFF;
+	--c-border: rgba(91, 101, 220, 0.2);
+}
+
+.dark {
+	--c-primary: #E8ECFF;
+	--c-accent: #93A4FF;
+	--c-accent-light: #1B234A;
+	--c-bg-light: #0B1022;
+	--c-surface: #121936;
+	--c-border: rgba(147, 164, 255, 0.28);
+}
+
+body {
+	background-color: var(--c-bg-light);
+	color: var(--c-primary);
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Tailwind v4 theme tokens */
+@theme {
+	--color-primary: var(--c-primary);
+	--color-accent: var(--c-accent);
+	--color-accentLight: var(--c-accent-light);
+	--color-bgLight: var(--c-bg-light);
+	--color-surface: var(--c-surface);
+}
+
+/* Dark mode utility overrides for existing classes */
+.dark .bg-white {
+	background-color: var(--c-surface);
+}
+
+.dark .bg-white\/95 {
+	background-color: color-mix(in oklab, var(--c-surface) 95%, transparent);
+}
+
+.dark .border-accent\/10,
+.dark .border-accent\/20,
+.dark .border-accent\/30 {
+	border-color: var(--c-border);
+}

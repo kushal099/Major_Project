@@ -1,0 +1,14 @@
+# Secrets
+mongo_uname_pass.txt
+**/.env
+
+# Keep templates
+!**/.env.example
+
+# Node artifacts
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Logs
+**/*.log
