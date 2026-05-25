@@ -31,8 +31,10 @@ console.log('[Server] MONGODB_URI:', MONGODB_URI ? '***SET***' : '***NOT SET***'
 
 // Frontend dist path - handles both local dev and Docker production
 const frontendDistPath = process.env.NODE_ENV === 'production'
-  ? path.resolve(__dirname, '../../frontend/dist')
-  : path.resolve(__dirname, '../../Frontend/client/dist');
+  ? path.resolve('/app/frontend/dist')  // Docker path
+  : path.resolve(__dirname, '../../Frontend/client/dist');  // Local dev path
+
+console.log('[Server] Looking for frontend dist at:', frontendDistPath);
 
 // Middleware
 app.use(cors());

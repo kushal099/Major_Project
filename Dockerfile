@@ -17,10 +17,18 @@ COPY Family_Health_Care_WebApp/Backend/server ./backend
 COPY Family_Health_Care_WebApp/Frontend/client ./frontend
 
 # Build frontend - with error checking
-RUN cd ./frontend && npm run build && \
-    if [ ! -d "dist" ]; then echo "ERROR: Frontend build failed - dist folder not created"; exit 1; fi && \
-    echo "Frontend build successful" && \
-    ls -la dist/ | head -10
+RUN cd ./frontend && \
+    echo "Building frontend..." && \
+    npm run build 2>&1 && \
+    echo "Build completed, checking dist folder..." && \
+    if [ ! -d "dist" ]; then \
+      echo "ERROR: Frontend dist folder not found after build!"; \
+      ls -la; \
+      exit 1; \
+    fi && \
+    echo "SUCCESS: Frontend built successfully" && \
+    du -sh dist/ && \
+    ls -la dist/ | head -5
 
 # Expose port
 EXPOSE 5000
