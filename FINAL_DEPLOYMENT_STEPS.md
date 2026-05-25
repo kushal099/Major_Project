@@ -81,7 +81,7 @@ git status
 ```
 …or push an existing repository from the command line
 
-git remote add origin https://github.com/YOUR_USERNAME/Family-HealthCare.git
+git remote add origin https://github.com/kushal099/Major_Project.git
 git branch -M main
 git push -u origin main
 ```
@@ -101,7 +101,7 @@ git push -u origin main
 
 ### 4.1 Verify the Remote
 1. In GitHub Desktop, open **Repository > Repository settings**.
-2. Confirm the remote URL points to `https://github.com/YOUR_USERNAME/Family-HealthCare.git`.
+2. Confirm the remote URL points to `https://github.com/kushal099/Major_Project.git`.
 3. If it does not, update the remote before pushing.
 
 ### 4.2 Add All Files
@@ -131,8 +131,8 @@ git commit -m "Initial commit: FamilyHealthCare - Complete MERN healthcare platf
 
 ### 4.4 Add Remote & Push
 ```bash
-# Replace with YOUR GitHub username and repo name
-git remote add origin https://github.com/YOUR_USERNAME/Family-HealthCare.git
+# Replace with your GitHub repo URL
+git remote add origin https://github.com/kushal099/Major_Project.git
 
 # Rename branch to main
 git branch -M main
@@ -144,7 +144,7 @@ git push -u origin main
 git log --oneline  # Should show your commit
 ```
 
-✅ **Visit your GitHub repo**: https://github.com/YOUR_USERNAME/Family-HealthCare
+✅ **Visit your GitHub repo**: https://github.com/kushal099/Major_Project
 
 ---
 

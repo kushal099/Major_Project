@@ -4,6 +4,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import fs from 'fs';
 
 import authRoutes from './routes/auth.js';
 import appointmentsRoutes from './routes/appointments.js';
@@ -21,6 +22,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/family_healthcare';
+const frontendDistPath = path.resolve(__dirname, '../../Frontend/client/dist');
 
 // Middleware
 app.use(cors());
@@ -34,6 +36,16 @@ app.use('/api/family', auth, familyRoutes);
 app.use('/api/prescriptions', auth, prescriptionsRoutes);
 app.use('/api/doctors', doctorsRoutes);
 app.use('/api/uploads', auth, uploadsRoutes);
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) {
+      return next();
+    }
+    return res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
 
 // Protected test route
 app.get('/api/protected', auth, (req, res) => {
