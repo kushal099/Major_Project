@@ -5,22 +5,22 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy backend package files and install dependencies
-COPY Family_Health_Care_WebApp/Backend/server/package*.json ./Family_Health_Care_WebApp/Backend/server/
-RUN cd Family_Health_Care_WebApp/Backend/server && npm ci
+COPY Family_Health_Care_WebApp/Backend/server/package*.json ./backend/
+RUN cd ./backend && npm ci
 
 # Copy frontend package files and install dependencies
-COPY Family_Health_Care_WebApp/Frontend/client/package*.json ./Family_Health_Care_WebApp/Frontend/client/
-RUN cd Family_Health_Care_WebApp/Frontend/client && npm ci
+COPY Family_Health_Care_WebApp/Frontend/client/package*.json ./frontend/
+RUN cd ./frontend && npm ci
 
 # Copy application code
-COPY Family_Health_Care_WebApp/Backend/server ./Family_Health_Care_WebApp/Backend/server
-COPY Family_Health_Care_WebApp/Frontend/client ./Family_Health_Care_WebApp/Frontend/client
+COPY Family_Health_Care_WebApp/Backend/server ./backend
+COPY Family_Health_Care_WebApp/Frontend/client ./frontend
 
 # Build frontend
-RUN cd Family_Health_Care_WebApp/Frontend/client && npm run build
+RUN cd ./frontend && npm run build
 
 # Expose port
 EXPOSE 5000
 
 # Start server
-CMD ["node", "Family_Health_Care_WebApp/Backend/server/index.js"]
+CMD ["node", "./backend/index.js"]

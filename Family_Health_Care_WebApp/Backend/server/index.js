@@ -22,7 +22,11 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/family_healthcare';
-const frontendDistPath = path.resolve(__dirname, '../../Frontend/client/dist');
+
+// Frontend dist path - handles both local dev and Docker production
+const frontendDistPath = process.env.NODE_ENV === 'production'
+  ? path.resolve(__dirname, '../../frontend/dist')
+  : path.resolve(__dirname, '../../Frontend/client/dist');
 
 // Middleware
 app.use(cors());
@@ -37,7 +41,9 @@ app.use('/api/prescriptions', auth, prescriptionsRoutes);
 app.use('/api/doctors', doctorsRoutes);
 app.use('/api/uploads', auth, uploadsRoutes);
 
+// Serve frontend static files in production
 if (fs.existsSync(frontendDistPath)) {
+  console.log(`[Server] Serving frontend from: ${frontendDistPath}`);
   app.use(express.static(frontendDistPath));
   app.get('*', (req, res, next) => {
     if (req.originalUrl.startsWith('/api')) {
@@ -45,6 +51,8 @@ if (fs.existsSync(frontendDistPath)) {
     }
     return res.sendFile(path.join(frontendDistPath, 'index.html'));
   });
+} else {
+  console.warn(`[Server] Frontend dist not found at: ${frontendDistPath}`);
 }
 
 // Protected test route
