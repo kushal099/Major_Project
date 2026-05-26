@@ -129,8 +129,8 @@ router.get('/patient/:userId', async (req, res) => {
   }
 });
 
-// GET /api/uploads/:uploadId - preview/serve file (inline for browser viewing)
-router.get('/:uploadId', async (req, res) => {
+// GET /api/uploads/:uploadId/download - download file with attachment disposition
+router.get('/:uploadId/download', async (req, res) => {
   try {
     const requester = req.user;
     if (!requester) return res.status(401).json({ message: 'Unauthorized' });
@@ -158,8 +158,8 @@ router.get('/:uploadId', async (req, res) => {
   }
 });
 
-// GET /api/uploads/:uploadId/download - download file with attachment disposition
-router.get('/:uploadId/download', async (req, res) => {
+// GET /api/uploads/:uploadId - preview/serve file (inline for browser viewing)
+router.get('/:uploadId', async (req, res) => {
   try {
     const requester = req.user;
     if (!requester) return res.status(401).json({ message: 'Unauthorized' });
