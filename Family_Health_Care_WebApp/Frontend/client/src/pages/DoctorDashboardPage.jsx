@@ -266,6 +266,40 @@ export default function DoctorDashboardPage() {
     }
   }
 
+  async function handlePreviewFile(uploadId, originalName) {
+    try {
+      const response = await api.get(`/api/uploads/${uploadId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Failed to preview file: ' + (err.response?.data?.message || err.message));
+    }
+  }
+
+  async function handleDownloadFile(uploadId, originalName) {
+    try {
+      const response = await api.get(`/api/uploads/${uploadId}/download`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = originalName;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Failed to download file: ' + (err.response?.data?.message || err.message));
+    }
+  }
+
   if (user?.role !== 'doctor') {
     return null;
   }
@@ -541,6 +575,22 @@ export default function DoctorDashboardPage() {
                         <div className="font-medium text-primary">{item.originalName}</div>
                         <div className="text-primary/50">{new Date(item.createdAt).toLocaleString()}</div>
                         {item.ocrText && <div className="mt-2 whitespace-pre-wrap">OCR: {item.ocrText.slice(0, 200)}</div>}
+                        <div className="flex gap-2 mt-3">
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewFile(item._id, item.originalName)}
+                            className="text-xs bg-accent text-white px-2 py-1 rounded hover:bg-accent/80 transition"
+                          >
+                            Preview
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadFile(item._id, item.originalName)}
+                            className="text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary/80 transition"
+                          >
+                            Download
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

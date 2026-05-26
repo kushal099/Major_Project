@@ -129,4 +129,62 @@ router.get('/patient/:userId', async (req, res) => {
   }
 });
 
+// GET /api/uploads/:uploadId - preview/serve file (inline for browser viewing)
+router.get('/:uploadId', async (req, res) => {
+  try {
+    const requester = req.user;
+    if (!requester) return res.status(401).json({ message: 'Unauthorized' });
+    
+    const upload = await MedicalUpload.findById(req.params.uploadId).lean();
+    if (!upload) return res.status(404).json({ message: 'File not found' });
+    
+    // Only allow doctor to preview patient's file, or user to preview their own file
+    if (requester.role === 'doctor' || String(requester.id) === String(upload.userId)) {
+      if (!fs.existsSync(upload.path)) {
+        return res.status(404).json({ message: 'File not found on disk' });
+      }
+      
+      // Serve with inline disposition for browser preview
+      res.setHeader('Content-Type', upload.mimetype || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${upload.originalName}"`);
+      res.setHeader('Cache-Control', 'no-cache');
+      return res.sendFile(upload.path);
+    }
+    
+    return res.status(403).json({ message: 'Forbidden: cannot preview this file' });
+  } catch (err) {
+    console.error('[Upload Preview] Error:', err.message || err);
+    return res.status(500).json({ message: 'Failed to preview file' });
+  }
+});
+
+// GET /api/uploads/:uploadId/download - download file with attachment disposition
+router.get('/:uploadId/download', async (req, res) => {
+  try {
+    const requester = req.user;
+    if (!requester) return res.status(401).json({ message: 'Unauthorized' });
+    
+    const upload = await MedicalUpload.findById(req.params.uploadId).lean();
+    if (!upload) return res.status(404).json({ message: 'File not found' });
+    
+    // Only allow doctor to download patient's file, or user to download their own file
+    if (requester.role === 'doctor' || String(requester.id) === String(upload.userId)) {
+      if (!fs.existsSync(upload.path)) {
+        return res.status(404).json({ message: 'File not found on disk' });
+      }
+      
+      // Serve with attachment disposition for download
+      res.setHeader('Content-Type', upload.mimetype || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${upload.originalName}"`);
+      res.setHeader('Cache-Control', 'no-cache');
+      return res.sendFile(upload.path);
+    }
+    
+    return res.status(403).json({ message: 'Forbidden: cannot download this file' });
+  } catch (err) {
+    console.error('[Upload Download] Error:', err.message || err);
+    return res.status(500).json({ message: 'Failed to download file' });
+  }
+});
+
 export default router;
